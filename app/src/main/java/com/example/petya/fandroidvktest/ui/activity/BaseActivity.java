@@ -6,20 +6,23 @@ import android.support.v7.widget.Toolbar;
 import android.widget.FrameLayout;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
+import com.example.petya.fandroidvktest.MyApplication;
 import com.example.petya.fandroidvktest.R;
 import com.example.petya.fandroidvktest.common.manager.MyFragmentManager;
 import com.example.petya.fandroidvktest.ui.fragment.BaseFragment;
 
+import javax.inject.Inject;
+
 public abstract class BaseActivity extends MvpAppCompatActivity {
 
+    @Inject
     MyFragmentManager myFragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
-
-        myFragmentManager = new MyFragmentManager();
+        MyApplication.getApplicationComponent().inject(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -32,7 +35,13 @@ public abstract class BaseActivity extends MvpAppCompatActivity {
     protected abstract int getMainContentLayout();
 
     public void fragmentOnScreen(BaseFragment fragment) {
+        setToolbarTitle(fragment.createToolbarTitle(this));
+    }
 
+    public void setToolbarTitle(String title) {
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(title);
+        }
     }
 
     public void setContent(BaseFragment fragment) {
@@ -55,7 +64,5 @@ public abstract class BaseActivity extends MvpAppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         removeCurrentFragment();
-
-        //19:24
     }
 }
